@@ -1,0 +1,14 @@
+<!-- finance_tracker/tracker/templates/tracker/view_budget.html -->
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>View Budget</h2>
+    {% if budget %}
+    <p><strong>Budget Amount:</strong> ${{ budget.amount }}</p>
+    <p><strong>Time Period:</strong> {{ budget.get_time_period_display }}</p>
+    {% else %}
+    <p>No budget set yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
