@@ -1,0 +1,33 @@
+<!-- finance_tracker/tracker/templates/tracker/transactions.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All Transactions</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.date }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.category.name }}</td>
+                <td>{{ transaction.description }}</td>
+                <td>
+                    <a href="{% url 'delete_transaction' transaction.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
