@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/Chart.min.css' %}">
+
+
+<div class="container mt-4">
+    <h1 style="color: #615EFC;"> Welcome {{user.username}}!!</h1>
+    <h2>Dashboard</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Income</h5>
+                    <p class="card-text" style="color: green; font-size: 1.5em;">₹{{ total_income }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <p class="card-text" style="color: red; font-size: 1.5em;">₹{{ total_expenses }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Savings</h5>
+                    <p class="card-text" style="color: green; font-size: 1.5em;" >₹{{ savings }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-md-6">
+            <div class="card mx-auto">
+                <div class="card-header border-0">
+                    <div class="d-flex justify-content-between">
+                        <h3 class="card-title">Report</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex">
+                        <p class="d-flex flex-column">
+                            <span class="text-bold text-lg">${{ total_income }}</span>
+                            <span>Income Over Time</span>
+                        </p>
+                        <p class="ml-auto d-flex flex-column text-right">
+                            <span class="text-success">
+                                <i class="fas fa-arrow-up"></i> 
+                            </span>
+                            <span class="text-muted"></span>
+                        </p>
+                    </div>
+                    <div class="position-relative mb-4">
+                        <canvas id="sales-chart" height="200"></canvas>
+                    </div>
+                    <div class="d-flex flex-row justify-content-end">
+                        <span class="mr-2">
+                            <i class="fas fa-square text-primary"></i> 
+                        </span>
+                        <span>
+                            <i class="fas fa-square text-gray"></i> 
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        var ticksStyle = {
+            fontColor: '#495057',
+            fontStyle: 'bold'
+        };
+
+        var mode = 'index';
+        var intersect = true;
+
+        var incomeData = JSON.parse('{{ income_data|escapejs }}');
+        var expenseData = JSON.parse('{{ expense_data|escapejs }}');
+
+        console.log("Income Data:", incomeData);
+        console.log("Expense Data:", expenseData);
+
+        var labels = Object.keys(incomeData);
+
+        var $salesChart = $('#sales-chart');
+        var salesChart = new Chart($salesChart, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        backgroundColor: '#007bff',
+                        borderColor: '#007bff',
+                        data: Object.values(incomeData)
+                    },
+                    {
+                        label: 'Expense',
+                        backgroundColor: '#ced4da',
+                        borderColor: '#ced4da',
+                        data: Object.values(expenseData)
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                hover: {
+                    mode: mode,
+                    intersect: intersect
+                },
+                legend: {
+                    display: true
+                },
+                scales: {
+                    yAxes: [{
+                        gridLines: {
+                            display: true,
+                            lineWidth: '4px',
+                            color: 'rgba(0, 0, 0, .2)',
+                            zeroLineColor: 'transparent'
+                        },
+                        ticks: $.extend({
+                            beginAtZero: true,
+                            callback: function (value) {
+                                if (value >= 1000) {
+                                    value /= 1000;
+                                    value += 'k';
+                                }
+                                return '₹' + value;
+                            }
+                        }, ticksStyle)
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: ticksStyle
+                    }]
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
